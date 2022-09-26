@@ -1,5 +1,5 @@
-import styled from 'styled-components';
 import { shade } from 'polished';
+import styled from 'styled-components';
 
 export const Container = styled.div`
   > header {
@@ -111,7 +111,7 @@ export const AvatarInput = styled.div`
     input {
       display: none;
     }
-    
+
     svg {
       width: 20px;
       height: 20px;

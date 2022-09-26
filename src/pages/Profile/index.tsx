@@ -12,11 +12,6 @@ import api from '../../services/api';
 import getValidationErrors from '../../utils/getValidationErrors';
 import { AvatarInput, Container, Content } from './styles';
 
-
-
-
-
-
 interface ProfileFormData {
   name: string;
   email: string;
@@ -46,29 +41,36 @@ const Profile: React.FC = () => {
           password: Yup.string().when('old_password', {
             is: val => !!val.length,
             then: Yup.string().required('Campo obrigatório'),
-            otherwise: Yup.string()
+            otherwise: Yup.string(),
           }),
-          password_confirmation: Yup.string().when('old_password', {
-            is: val => !!val.length,
-            then: Yup.string().required('Campo obrigatório'),
-            otherwise: Yup.string()
-          }).oneOf(
-            [Yup.ref('password')],
-            'Confirmação incorreta',
-          ),
+          password_confirmation: Yup.string()
+            .when('old_password', {
+              is: val => !!val.length,
+              then: Yup.string().required('Campo obrigatório'),
+              otherwise: Yup.string(),
+            })
+            .oneOf([Yup.ref('password')], 'Confirmação incorreta'),
         });
 
         await schema.validate(data, {
           abortEarly: false,
         });
 
-        const { name, email, old_password, password, password_confirmation } = data;
+        const {
+          name,
+          email,
+          old_password,
+          password,
+          password_confirmation,
+        } = data;
 
         const formData = {
           name,
           email,
-          ...(old_password ? { old_password, password, password_confirmation } : {}),
-        }
+          ...(old_password
+            ? { old_password, password, password_confirmation }
+            : {}),
+        };
 
         const response = await api.put('/profile', formData);
 
@@ -79,7 +81,8 @@ const Profile: React.FC = () => {
         addToast({
           type: 'success',
           title: 'Perfil atualizado!',
-          description: 'Suas informações do perfil foram atualizadas com sucesso!',
+          description:
+            'Suas informações do perfil foram atualizadas com sucesso!',
         });
       } catch (err) {
         if (err instanceof Yup.ValidationError) {
@@ -91,29 +94,33 @@ const Profile: React.FC = () => {
         addToast({
           type: 'error',
           title: 'Erro na atualização',
-          description: 'Ocorreu um erro ao atualizar o perfil, tente novamente.',
+          description:
+            'Ocorreu um erro ao atualizar o perfil, tente novamente.',
         });
       }
     },
-    [addToast, history],
+    [addToast, history, updateUser],
   );
 
-  const handleAvatarChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
-    if(e.target.files) {
-      const data = new FormData();
+  const handleAvatarChange = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      if (e.target.files) {
+        const data = new FormData();
 
-      data.append('avatar', e.target.files[0]);
+        data.append('avatar', e.target.files[0]);
 
-      api.patch('/users/avatar', data).then((response) => {
-        updateUser(response.data);
-        
-        addToast({
-          type: 'success',
-          title: 'Avatar atualizado',
+        api.patch('/users/avatar', data).then(response => {
+          updateUser(response.data);
+
+          addToast({
+            type: 'success',
+            title: 'Avatar atualizado',
+          });
         });
-      });
-    }
-  }, [addToast, updateUser]);
+      }
+    },
+    [addToast, updateUser],
+  );
 
   return (
     <Container>
@@ -125,47 +132,51 @@ const Profile: React.FC = () => {
         </div>
       </header>
       <Content>
-          <Form ref={formRef} initialData={{
+        <Form
+          ref={formRef}
+          initialData={{
             name: user.name,
-            email: user.email
-          }} onSubmit={handleSubmit}>
-            <AvatarInput>
-              <img src={user.avatar_url} alt={user.name} />
-              <label htmlFor="avatar">
-                <FiCamera />
+            email: user.email,
+          }}
+          onSubmit={handleSubmit}
+        >
+          <AvatarInput>
+            <img src={user.avatar_url} alt={user.name} />
+            <label htmlFor="avatar">
+              <FiCamera />
 
-                <input type="file" id="avatar" onChange={handleAvatarChange}/>
-              </label>
-            </AvatarInput>
+              <input type="file" id="avatar" onChange={handleAvatarChange} />
+            </label>
+          </AvatarInput>
 
-            <h1>Meu perfil</h1>
+          <h1>Meu perfil</h1>
 
-            <Input name="name" icon={FiUser} placeholder="Nome" />
-            <Input name="email" icon={FiMail} placeholder="Email" />
-            <Input
-              containerStyle={{ marginTop: 24 }}
-              name="old_password"
-              icon={FiLock}
-              type="password"
-              placeholder="Senha atual"
-            />
+          <Input name="name" icon={FiUser} placeholder="Nome" />
+          <Input name="email" icon={FiMail} placeholder="Email" />
+          <Input
+            containerStyle={{ marginTop: 24 }}
+            name="old_password"
+            icon={FiLock}
+            type="password"
+            placeholder="Senha atual"
+          />
 
-            <Input
-              name="password"
-              icon={FiLock}
-              type="password"
-              placeholder="Nova senha"
-            />
+          <Input
+            name="password"
+            icon={FiLock}
+            type="password"
+            placeholder="Nova senha"
+          />
 
-            <Input
-              name="password_confirmation"
-              icon={FiLock}
-              type="password"
-              placeholder="Confirmar senha"
-            />
+          <Input
+            name="password_confirmation"
+            icon={FiLock}
+            type="password"
+            placeholder="Confirmar senha"
+          />
 
-            <Button type="submit">Confirmar mudanças</Button>
-          </Form>
+          <Button type="submit">Confirmar mudanças</Button>
+        </Form>
       </Content>
     </Container>
   );
