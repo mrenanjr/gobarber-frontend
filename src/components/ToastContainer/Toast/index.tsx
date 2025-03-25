@@ -8,6 +8,7 @@ import {
 import { ToastMessage, useToast } from '../../../hooks/toast';
 
 import { Container } from './styles';
+import { animated } from '@react-spring/web';
 
 interface ToastProps {
   message: ToastMessage;
@@ -35,8 +36,9 @@ const Toast: React.FC<ToastProps> = ({ message, style }) => {
 
   return (
     <Container
+      key={message.id}
       type={message.type}
-      hasdescription={Number(!!message.description)}
+      hasdescription={Number(!!message?.description)}
       style={style}
     >
       {icons[message.type || 'info']}
@@ -46,7 +48,7 @@ const Toast: React.FC<ToastProps> = ({ message, style }) => {
         {message.description && <p>{message.description}</p>}
       </div>
 
-      <button onClick={() => removeToast(message.id)} type="button">
+      <button onClick={() => removeToast(message.id)} type='button'>
         <FiXCircle size={20} />
       </button>
     </Container>

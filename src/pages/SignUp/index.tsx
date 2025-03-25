@@ -1,9 +1,9 @@
 import React, { useCallback, useRef } from 'react';
 import { FiMail, FiUser, FiArrowLeft, FiLock } from 'react-icons/fi';
-import { FormHandles } from '@unform/core';
-import { Form } from '@unform/web';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from 'yup';
-import { Link, useHistory } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router';
 
 import api from '../../services/api';
 
@@ -24,31 +24,25 @@ interface SingUpFormData {
   password: string;
 }
 
-const SingUp: React.FC = () => {
-  const formRef = useRef<FormHandles>(null);
-  const { addToast } = useToast();
-  const history = useHistory();
+const schema = Yup.object().shape({
+  name: Yup.string().required('Nome obrigatório'),
+  email: Yup.string().required('E-mail obrigatório').email('Digite um e-mail válido'),
+  password: Yup.string().min(6, 'No mínimo 6 dítigos'),
+});
 
-  const handleSubmit = useCallback(
+const SingUp: React.FC = () => {
+  const { register, handleSubmit, formState: { errors } } = useForm<SingUpFormData>({
+    resolver: yupResolver(schema) as any
+  });
+  const { addToast } = useToast();
+  const navigate = useNavigate();
+
+  const onSubmit = useCallback(
     async (data: SingUpFormData) => {
       try {
-        formRef.current?.setErrors({});
-
-        const schema = Yup.object().shape({
-          name: Yup.string().required('Nome obrigatório'),
-          email: Yup.string()
-            .required('E-mail obrigatório')
-            .email('Digite um e-mail válido'),
-          password: Yup.string().min(6, 'No mínimo 6 dítigos'),
-        });
-
-        await schema.validate(data, {
-          abortEarly: false,
-        });
-
         await api.post('/users', data);
 
-        history.push('/');
+        navigate('/');
 
         addToast({
           type: 'success',
@@ -56,11 +50,11 @@ const SingUp: React.FC = () => {
           description: 'Você ja pode fazer o seu logon no GoBarber!',
         });
       } catch (err) {
-        if (err instanceof Yup.ValidationError) {
-          formRef.current?.setErrors(getValidationErrors(err));
+        // if (err instanceof Yup.ValidationError) {
+        //   formRef.current?.setErrors(getValidationErrors(err));
 
-          return;
-        }
+        //   return;
+        // }
 
         addToast({
           type: 'error',
@@ -79,19 +73,30 @@ const SingUp: React.FC = () => {
         <AnimationContainer>
           <img src={logoImg} alt="GoBarber" />
 
-          <Form ref={formRef} onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit(onSubmit)}>
             <h1>Faça seu cadastro</h1>
 
-            <Input name="name" icon={FiUser} placeholder="Nome" />
-            <Input name="email" icon={FiMail} placeholder="Email" />
+            <Input 
+              icon={FiUser}
+              placeholder="Nome"
+              {...register("name")}
+              error={errors.name?.message}
+            />
             <Input
-              name="password"
+              icon={FiMail}
+              placeholder="Email"
+              {...register("email")}
+              error={errors.email?.message}
+            />
+            <Input
               icon={FiLock}
               type="password"
               placeholder="Senha"
+              {...register("password")}
+              error={errors.password?.message}
             />
             <Button type="submit">Cadastrar</Button>
-          </Form>
+          </form>
           <Link to="/">
             <FiArrowLeft />
             Voltar para logon

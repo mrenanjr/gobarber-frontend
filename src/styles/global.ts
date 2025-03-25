@@ -26,4 +26,13 @@ export default createGlobalStyle`
   button {
     cursor: pointer;
   }
+
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 30px #232129 inset !important; /* Change 'white' to your desired color */
+    -webkit-text-fill-color: #f4ede8 !important; /* Change 'black' to your desired text color */
+    caret-color: white !important;
+  }
 `;

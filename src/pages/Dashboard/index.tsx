@@ -1,12 +1,11 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { isToday, format, isAfter, parseISO } from 'date-fns';
-import ptBR from 'date-fns/locale/pt-BR';
-import DayPicker, { DayModifiers } from 'react-day-picker';
-import 'react-day-picker/lib/style.css';
+import { ptBR } from 'date-fns/locale/pt-BR';
+import { DayPicker, formatDay, Modifiers } from 'react-day-picker';
 
 import { FiClock, FiPower } from 'react-icons/fi';
 
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import {
   Container,
   Header,
@@ -49,7 +48,7 @@ const Dashboard: React.FC = () => {
 
   const { signOut, user } = useAuth();
 
-  const handleDateChange = useCallback((day: Date, modifiers: DayModifiers) => {
+  const handleDateChange = useCallback((day: Date, modifiers: Modifiers) => {
     if (modifiers.available && !modifiers.disabled) {
       setSelectedDate(day);
     }
@@ -230,29 +229,29 @@ const Dashboard: React.FC = () => {
         </Schedule>
         <Calendar>
           <DayPicker
-            weekdaysShort={['D', 'S', 'T', 'Q', 'Q', 'S', 'S']}
-            fromMonth={new Date()}
-            disabledDays={[{ daysOfWeek: [0, 6] }, ...disabledDays]}
+            locale={ptBR}
+            mode="single"
+            disabled={(date) => date.getDay() === 0 || date.getDay() === 6 || disabledDays.includes(date)}
             modifiers={{
-              available: { daysOfWeek: [1, 2, 3, 4, 5] },
+              available: { dayOfWeek: [1, 2, 3, 4, 5] },
             }}
             onMonthChange={handleMonthChange}
-            selectedDays={selectedDate}
+            selected={selectedDate}
             onDayClick={handleDateChange}
-            months={[
-              'Janeiro',
-              'Fevereiro',
-              'Março',
-              'Abril',
-              'Maio',
-              'Junho',
-              'Julho',
-              'Agosto',
-              'Setembro',
-              'Outubro',
-              'Novembro',
-              'Dezembro',
-            ]}
+            // months={[
+            //   'Janeiro',
+            //   'Fevereiro',
+            //   'Março',
+            //   'Abril',
+            //   'Maio',
+            //   'Junho',
+            //   'Julho',
+            //   'Agosto',
+            //   'Setembro',
+            //   'Outubro',
+            //   'Novembro',
+            //   'Dezembro',
+            // ]}
           />
         </Calendar>
       </Content>

@@ -1,9 +1,9 @@
 import React, { useCallback, useRef, useState } from 'react';
 import { FiLogIn, FiMail } from 'react-icons/fi';
-import { FormHandles } from '@unform/core';
-import { Form } from '@unform/web';
+import { useForm } from 'react-hook-form';
 import * as Yup from 'yup';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
+import { yupResolver } from "@hookform/resolvers/yup";
 
 import getValidationErrors from '../../utils/getValidationErrors';
 
@@ -20,29 +20,25 @@ interface ForgotPasswordFormData {
   email: string;
 }
 
+const schema = Yup.object().shape({
+  email: Yup.string()
+    .required('E-mail obrigatório')
+    .email('Digite um e-mail válido')
+});
+
 const ForgotPassword: React.FC = () => {
+  const { register, handleSubmit, formState: { errors } } = useForm<ForgotPasswordFormData>({
+    resolver: yupResolver(schema) as any
+  });
+
   const [loading, setLoading] = useState(false);
-  const formRef = useRef<FormHandles>(null);
 
   const { addToast } = useToast();
 
-  const handleSubmit = useCallback(
+  const onSubmit = useCallback(
     async (data: ForgotPasswordFormData) => {
       try {
         setLoading(true);
-
-        formRef.current?.setErrors({});
-
-        const schema = Yup.object().shape({
-          email: Yup.string()
-            .required('E-mail obrigatório')
-            .email('Digite um e-mail válido'),
-          password: Yup.string().required('Senha obrigatória'),
-        });
-
-        await schema.validate(data, {
-          abortEarly: false,
-        });
 
         await api.post('/password/forgot', { email: data.email });
 
@@ -52,13 +48,12 @@ const ForgotPassword: React.FC = () => {
           description:
             'Enviamos um e-mail para confirmar a recuperação de senha, cheque sua caixa de entrada',
         });
-        // history.push('/dashboard');
       } catch (err) {
-        if (err instanceof Yup.ValidationError) {
-          formRef.current?.setErrors(getValidationErrors(err));
+        // if (err instanceof Yup.ValidationError) {
+        //   formRef.current?.setErrors(getValidationErrors(err));
 
-          return;
-        }
+        //   return;
+        // }
 
         addToast({
           type: 'error',
@@ -79,13 +74,18 @@ const ForgotPassword: React.FC = () => {
         <AnimationContainer>
           <img src={logoImg} alt="GoBarber" />
 
-          <Form ref={formRef} onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit(onSubmit)}>
             <h1>Recuperar senha</h1>
-            <Input name="email" icon={FiMail} placeholder="Email" />
+            <Input
+              icon={FiMail}
+              placeholder="Email"
+              {...register("email")}
+              error={errors.email?.message}
+            />
             <Button loading={loading} type="submit">
               Recuperar
             </Button>
-          </Form>
+          </form>
           <Link to="/">
             <FiLogIn />
             Voltar ao login

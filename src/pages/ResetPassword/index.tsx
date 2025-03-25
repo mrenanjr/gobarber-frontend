@@ -1,9 +1,9 @@
-import React, { useCallback, useRef } from 'react';
+import React, { useCallback } from 'react';
 import { FiLock } from 'react-icons/fi';
-import { FormHandles } from '@unform/core';
-import { Form } from '@unform/web';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from 'yup';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router';
 
 import getValidationErrors from '../../utils/getValidationErrors';
 
@@ -21,35 +21,30 @@ interface ResetPasswordFormData {
   password_confirmation: string;
 }
 
+const schema = Yup.object().shape({
+  password: Yup.string().required("Senha obrigatória"),
+  password_confirmation: Yup.string()
+    .oneOf([Yup.ref("password")], "Confirmação incorreta")
+    .required("Confirmação de senha obrigatória"),
+});
+
 const ResetPassword: React.FC = () => {
-  const formRef = useRef<FormHandles>(null);
+  const { register, handleSubmit, formState: { errors } } = useForm<ResetPasswordFormData>({
+    resolver: yupResolver(schema) as any
+  });
 
   const { addToast } = useToast();
-  const history = useHistory();
+  const navigate = useNavigate();
   const location = useLocation();
 
-  const handleSubmit = useCallback(
+  const onSubmit = useCallback(
     async (data: ResetPasswordFormData) => {
       try {
-        formRef.current?.setErrors({});
-
-        const schema = Yup.object().shape({
-          password: Yup.string().required('Senha obrigatória'),
-          password_confirmation: Yup.string().oneOf(
-            [Yup.ref('password')],
-            'Confirmação incorreta',
-          ),
-        });
-
-        await schema.validate(data, {
-          abortEarly: false,
-        });
-
         const { password, password_confirmation } = data;
-        const token = location.search.replace('?token=', '');
+        const token = new URLSearchParams(location.search).get("token");
 
         if (!token) {
-          throw new Error();
+          throw new Error("Token inválido");
         }
 
         await api.post('/password/reset', {
@@ -58,13 +53,13 @@ const ResetPassword: React.FC = () => {
           token,
         });
 
-        history.push('/');
+        navigate('/');
       } catch (err) {
-        if (err instanceof Yup.ValidationError) {
-          formRef.current?.setErrors(getValidationErrors(err));
+        // if (err instanceof Yup.ValidationError) {
+        //   formRef.current?.setErrors(getValidationErrors(err));
 
-          return;
-        }
+        //   return;
+        // }
 
         addToast({
           type: 'error',
@@ -82,22 +77,24 @@ const ResetPassword: React.FC = () => {
         <AnimationContainer>
           <img src={logoImg} alt="GoBarber" />
 
-          <Form ref={formRef} onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit(onSubmit)}>
             <h1>Resetar senha</h1>
             <Input
-              name="password"
               icon={FiLock}
               type="password"
               placeholder="Senha"
+              {...register("password")}
+              error={errors.password?.message}
             />
             <Input
-              name="password_confirmation"
               icon={FiLock}
               type="password"
               placeholder="Confirmação de senha"
+              {...register("password_confirmation")}
+              error={errors.password_confirmation?.message}
             />
             <Button type="submit">Alterar senha</Button>
-          </Form>
+          </form>
         </AnimationContainer>
       </Content>
 

@@ -1,7 +1,8 @@
 import styled, { css } from 'styled-components';
-import { animated } from 'react-spring';
+import { animated } from '@react-spring/web';
 
 interface ContainerProps {
+  children?: React.ReactNode;
   type?: 'success' | 'error' | 'info';
   hasdescription: number;
 }
