@@ -3,7 +3,7 @@ import { FiLogIn, FiMail } from 'react-icons/fi';
 import { useForm } from 'react-hook-form';
 import * as Yup from 'yup';
 import { Link } from 'react-router';
-import { yupResolver } from "@hookform/resolvers/yup";
+import { yupResolver } from '@hookform/resolvers/yup';
 
 import getValidationErrors from '../../utils/getValidationErrors';
 
@@ -23,12 +23,16 @@ interface ForgotPasswordFormData {
 const schema = Yup.object().shape({
   email: Yup.string()
     .required('E-mail obrigatório')
-    .email('Digite um e-mail válido')
+    .email('Digite um e-mail válido'),
 });
 
 const ForgotPassword: React.FC = () => {
-  const { register, handleSubmit, formState: { errors } } = useForm<ForgotPasswordFormData>({
-    resolver: yupResolver(schema) as any
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<ForgotPasswordFormData>({
+    resolver: yupResolver(schema) as any,
   });
 
   const [loading, setLoading] = useState(false);
@@ -79,7 +83,7 @@ const ForgotPassword: React.FC = () => {
             <Input
               icon={FiMail}
               placeholder="Email"
-              {...register("email")}
+              {...register('email')}
               error={errors.email?.message}
             />
             <Button loading={loading} type="submit">

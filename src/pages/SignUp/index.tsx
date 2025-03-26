@@ -1,7 +1,7 @@
 import React, { useCallback, useRef } from 'react';
 import { FiMail, FiUser, FiArrowLeft, FiLock } from 'react-icons/fi';
 import { useForm } from 'react-hook-form';
-import { yupResolver } from "@hookform/resolvers/yup";
+import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
 import { Link, useNavigate } from 'react-router';
 
@@ -26,13 +26,19 @@ interface SingUpFormData {
 
 const schema = Yup.object().shape({
   name: Yup.string().required('Nome obrigatório'),
-  email: Yup.string().required('E-mail obrigatório').email('Digite um e-mail válido'),
+  email: Yup.string()
+    .required('E-mail obrigatório')
+    .email('Digite um e-mail válido'),
   password: Yup.string().min(6, 'No mínimo 6 dítigos'),
 });
 
 const SingUp: React.FC = () => {
-  const { register, handleSubmit, formState: { errors } } = useForm<SingUpFormData>({
-    resolver: yupResolver(schema) as any
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<SingUpFormData>({
+    resolver: yupResolver(schema) as any,
   });
   const { addToast } = useToast();
   const navigate = useNavigate();
@@ -50,12 +56,6 @@ const SingUp: React.FC = () => {
           description: 'Você ja pode fazer o seu logon no GoBarber!',
         });
       } catch (err) {
-        // if (err instanceof Yup.ValidationError) {
-        //   formRef.current?.setErrors(getValidationErrors(err));
-
-        //   return;
-        // }
-
         addToast({
           type: 'error',
           title: 'Erro no cadastro',
@@ -63,7 +63,7 @@ const SingUp: React.FC = () => {
         });
       }
     },
-    [addToast, history],
+    [addToast, navigate],
   );
 
   return (
@@ -76,23 +76,23 @@ const SingUp: React.FC = () => {
           <form onSubmit={handleSubmit(onSubmit)}>
             <h1>Faça seu cadastro</h1>
 
-            <Input 
+            <Input
               icon={FiUser}
               placeholder="Nome"
-              {...register("name")}
+              {...register('name')}
               error={errors.name?.message}
             />
             <Input
               icon={FiMail}
               placeholder="Email"
-              {...register("email")}
+              {...register('email')}
               error={errors.email?.message}
             />
             <Input
               icon={FiLock}
               type="password"
               placeholder="Senha"
-              {...register("password")}
+              {...register('password')}
               error={errors.password?.message}
             />
             <Button type="submit">Cadastrar</Button>

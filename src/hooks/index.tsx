@@ -4,7 +4,7 @@ import { AuthProvider } from './auth';
 import { ToastProvider } from './toast';
 
 interface AppProviderProps {
-  children: React.ReactNode
+  children: React.ReactNode;
 }
 const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
   return (

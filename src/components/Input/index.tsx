@@ -24,11 +24,14 @@ const Input: React.FC<InputProps> = ({
     setIsFocused(true);
   }, []);
 
-  const handleInputBlur = useCallback((event: React.FocusEvent<HTMLInputElement>) => {
-    setIsFocused(false);
+  const handleInputBlur = useCallback(
+    (event: React.FocusEvent<HTMLInputElement>) => {
+      setIsFocused(false);
 
-    setIsFilled(!!event.target.value);
-  }, []);
+      setIsFilled(!!event.target.value);
+    },
+    [],
+  );
 
   return (
     <Container

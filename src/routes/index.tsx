@@ -8,7 +8,7 @@ import ResetPassword from '../pages/ResetPassword';
 import Profile from '../pages/Profile';
 import Dashboard from '../pages/Dashboard';
 
-const PrivateRoute = ({ element }: { element: JSX.Element }) => {
+const PrivateRoute = ({ element }: { element: JSX.Element }): JSX.Element => {
   const isAuthenticated = false;
   return isAuthenticated ? element : <Navigate to="/" />;
 };
@@ -21,7 +21,10 @@ const RoutesProvider: React.FC = () => (
     <Route path="/reset-password" element={<ResetPassword />} />
 
     <Route path="/profile" element={<PrivateRoute element={<Profile />} />} />
-    <Route path="/dashboard" element={<PrivateRoute element={<Dashboard />} />} />
+    <Route
+      path="/dashboard"
+      element={<PrivateRoute element={<Dashboard />} />}
+    />
   </Routes>
 );
 

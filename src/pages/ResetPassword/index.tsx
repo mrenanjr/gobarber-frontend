@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import { FiLock } from 'react-icons/fi';
 import { useForm } from 'react-hook-form';
-import { yupResolver } from "@hookform/resolvers/yup";
+import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
 import { useNavigate, useLocation } from 'react-router';
 
@@ -22,15 +22,19 @@ interface ResetPasswordFormData {
 }
 
 const schema = Yup.object().shape({
-  password: Yup.string().required("Senha obrigatória"),
+  password: Yup.string().required('Senha obrigatória'),
   password_confirmation: Yup.string()
-    .oneOf([Yup.ref("password")], "Confirmação incorreta")
-    .required("Confirmação de senha obrigatória"),
+    .oneOf([Yup.ref('password')], 'Confirmação incorreta')
+    .required('Confirmação de senha obrigatória'),
 });
 
 const ResetPassword: React.FC = () => {
-  const { register, handleSubmit, formState: { errors } } = useForm<ResetPasswordFormData>({
-    resolver: yupResolver(schema) as any
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<ResetPasswordFormData>({
+    resolver: yupResolver(schema) as any,
   });
 
   const { addToast } = useToast();
@@ -41,10 +45,10 @@ const ResetPassword: React.FC = () => {
     async (data: ResetPasswordFormData) => {
       try {
         const { password, password_confirmation } = data;
-        const token = new URLSearchParams(location.search).get("token");
+        const token = new URLSearchParams(location.search).get('token');
 
         if (!token) {
-          throw new Error("Token inválido");
+          throw new Error('Token inválido');
         }
 
         await api.post('/password/reset', {
@@ -68,7 +72,7 @@ const ResetPassword: React.FC = () => {
         });
       }
     },
-    [addToast, history, location],
+    [addToast, navigate, location],
   );
 
   return (
@@ -83,14 +87,14 @@ const ResetPassword: React.FC = () => {
               icon={FiLock}
               type="password"
               placeholder="Senha"
-              {...register("password")}
+              {...register('password')}
               error={errors.password?.message}
             />
             <Input
               icon={FiLock}
               type="password"
               placeholder="Confirmação de senha"
-              {...register("password_confirmation")}
+              {...register('password_confirmation')}
               error={errors.password_confirmation?.message}
             />
             <Button type="submit">Alterar senha</Button>

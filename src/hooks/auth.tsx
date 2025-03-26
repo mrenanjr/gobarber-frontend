@@ -28,7 +28,7 @@ interface AuthContextData {
 const AuthContext = createContext<AuthContextData>({} as AuthContextData);
 
 interface AuthProviderProps {
-  children: React.ReactNode
+  children: React.ReactNode;
 }
 
 const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
@@ -45,21 +45,24 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     return {} as AuthState;
   });
 
-  const signIn = useCallback(async ({ email, password }: { email: string; password: string }) => {
-    const resp = await api.post('sessions', {
-      email,
-      password,
-    });
+  const signIn = useCallback(
+    async ({ email, password }: { email: string; password: string }) => {
+      const resp = await api.post('sessions', {
+        email,
+        password,
+      });
 
-    const { token, user } = resp.data;
+      const { token, user } = resp.data;
 
-    localStorage.setItem('@GoBarber:token', token);
-    localStorage.setItem('@GoBarber:user', JSON.stringify(user));
+      localStorage.setItem('@GoBarber:token', token);
+      localStorage.setItem('@GoBarber:user', JSON.stringify(user));
 
-    api.defaults.headers.authorization = `Bearer ${token}`;
+      api.defaults.headers.authorization = `Bearer ${token}`;
 
-    setData({ token, user });
-  }, []);
+      setData({ token, user });
+    },
+    [],
+  );
 
   const signOut = useCallback(() => {
     localStorage.removeItem('@GoBarber:token');

@@ -17,7 +17,7 @@ interface ToastContextData {
 const ToastContext = createContext({} as ToastContextData);
 
 interface ToastPriderProps {
-  children: React.ReactNode
+  children: React.ReactNode;
 }
 
 const ToastProvider: React.FC<ToastPriderProps> = ({ children }) => {

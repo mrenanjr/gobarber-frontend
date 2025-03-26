@@ -231,7 +231,11 @@ const Dashboard: React.FC = () => {
           <DayPicker
             locale={ptBR}
             mode="single"
-            disabled={(date) => date.getDay() === 0 || date.getDay() === 6 || disabledDays.includes(date)}
+            disabled={date =>
+              date.getDay() === 0 ||
+              date.getDay() === 6 ||
+              disabledDays.includes(date)
+            }
             modifiers={{
               available: { dayOfWeek: [1, 2, 3, 4, 5] },
             }}

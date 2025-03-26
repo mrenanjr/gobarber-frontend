@@ -1,5 +1,5 @@
 import styled, { css } from 'styled-components';
-import { animated } from '@react-spring/web';
+import { animated } from 'react-spring';
 
 interface ContainerProps {
   children?: React.ReactNode;

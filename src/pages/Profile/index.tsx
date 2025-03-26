@@ -1,18 +1,15 @@
-import { FormHandles } from '@unform/core';
-import { Form } from '@unform/web';
 import React, { ChangeEvent, useCallback, useRef } from 'react';
 import { FiArrowLeft, FiCamera, FiLock, FiMail, FiUser } from 'react-icons/fi';
 import { Link, useNavigate } from 'react-router';
 import * as Yup from 'yup';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { useForm } from 'react-hook-form';
 import Button from '../../components/Button';
 import Input from '../../components/Input';
 import { useAuth } from '../../hooks/auth';
 import { useToast } from '../../hooks/toast';
 import api from '../../services/api';
-import getValidationErrors from '../../utils/getValidationErrors';
 import { AvatarInput, Container, Content } from './styles';
-import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
 
 interface ProfileFormData {
   name: string;
@@ -22,28 +19,33 @@ interface ProfileFormData {
   password_confirmation: string;
 }
 
-const schema = Yup.object().shape({
+const schemaP = Yup.object().shape({
   name: Yup.string().required('Nome obrigatório'),
   email: Yup.string()
     .required('E-mail obrigatório')
     .email('Digite um e-mail válido'),
   old_password: Yup.string(),
-  password: Yup.string().when('old_password', (old_password, schema) => 
+  password: Yup.string().when('old_password', (old_password, schema) =>
     old_password && old_password.length > 0
       ? schema.required('Campo obrigatório')
-      : schema
+      : schema,
   ),
-  password_confirmation: Yup.string().when('old_password', (old_password, schema) =>
-    old_password && old_password.length > 0
-      ? schema.required('Campo obrigatório')
-      : schema
-  )
-  .oneOf([Yup.ref('password')], 'Confirmação incorreta'),
+  password_confirmation: Yup.string()
+    .when('old_password', (old_password, schema) =>
+      old_password && old_password.length > 0
+        ? schema.required('Campo obrigatório')
+        : schema,
+    )
+    .oneOf([Yup.ref('password')], 'Confirmação incorreta'),
 });
 
 const Profile: React.FC = () => {
-  const { register, handleSubmit, formState: { errors } } = useForm<ProfileFormData>({
-    resolver: yupResolver(schema) as any
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<ProfileFormData>({
+    resolver: yupResolver(schemaP) as any,
   });
   const { addToast } = useToast();
   const navigate = useNavigate();
@@ -53,13 +55,8 @@ const Profile: React.FC = () => {
   const onSubmit = useCallback(
     async (data: ProfileFormData) => {
       try {
-        const {
-          name,
-          email,
-          old_password,
-          password,
-          password_confirmation,
-        } = data;
+        const { name, email, old_password, password, password_confirmation } =
+          data;
 
         const formData = {
           name,
@@ -96,7 +93,7 @@ const Profile: React.FC = () => {
         });
       }
     },
-    [addToast, history, updateUser],
+    [addToast, navigate, updateUser],
   );
 
   const handleAvatarChange = useCallback(
@@ -129,7 +126,7 @@ const Profile: React.FC = () => {
         </div>
       </header>
       <Content>
-        <form onSubmit={handleSubmit(onSubmit)} >
+        <form onSubmit={handleSubmit(onSubmit)}>
           <AvatarInput>
             <img src={user.avatar_url} alt={user.name} />
             <label htmlFor="avatar">
@@ -145,14 +142,14 @@ const Profile: React.FC = () => {
             icon={FiUser}
             placeholder="Nome"
             defaultValue={user.name}
-            {...register("name")}
+            {...register('name')}
             error={errors.name?.message}
           />
           <Input
             icon={FiMail}
             placeholder="Email"
             defaultValue={user.email}
-            {...register("email")}
+            {...register('email')}
             error={errors.email?.message}
           />
           <Input
@@ -160,7 +157,7 @@ const Profile: React.FC = () => {
             icon={FiLock}
             type="password"
             placeholder="Senha atual"
-            {...register("old_password")}
+            {...register('old_password')}
             error={errors.old_password?.message}
           />
 
@@ -168,7 +165,7 @@ const Profile: React.FC = () => {
             icon={FiLock}
             type="password"
             placeholder="Nova senha"
-            {...register("password")}
+            {...register('password')}
             error={errors.password?.message}
           />
 
@@ -176,7 +173,7 @@ const Profile: React.FC = () => {
             icon={FiLock}
             type="password"
             placeholder="Confirmar senha"
-            {...register("password_confirmation")}
+            {...register('password_confirmation')}
             error={errors.password_confirmation?.message}
           />
 

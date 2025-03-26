@@ -6,21 +6,19 @@ import { useAuth } from '../hooks/auth';
 interface CustomRouteProps {
   isPrivate?: boolean;
   component: React.ComponentType;
-  path: string
+  path: string;
 }
 
 const CustomRoute: React.FC<CustomRouteProps> = ({
   isPrivate = false,
   component: Component,
-  path
+  path,
 }) => {
   const { user } = useAuth();
 
-  if(isPrivate && !user)
-    return <Navigate to="/" replace />;
+  if (isPrivate && !user) return <Navigate to="/" replace />;
 
-  if(!isPrivate && user)
-    return <Navigate to="/dashboard" replace />;
+  if (!isPrivate && user) return <Navigate to="/dashboard" replace />;
 
   return <Route path={path} element={<Component />} />;
 };

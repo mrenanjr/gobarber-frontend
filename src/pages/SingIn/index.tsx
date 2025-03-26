@@ -31,7 +31,14 @@ const schema = Yup.object().shape({
 });
 
 const SingIn: React.FC = () => {
-  const { register, handleSubmit, formState: { errors } } = useForm<SignInFormData>({ resolver: yupResolver(schema), shouldFocusError: false });
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<SignInFormData>({
+    resolver: yupResolver(schema),
+    shouldFocusError: false,
+  });
 
   const { signIn } = useAuth();
   const { addToast } = useToast();
