@@ -24,7 +24,9 @@ export default createGlobalStyle`
   }
 
   button {
+    all: unset;
     cursor: pointer;
+    display: inline-block;
   }
 
   input:-webkit-autofill,

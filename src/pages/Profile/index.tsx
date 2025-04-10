@@ -79,12 +79,6 @@ const Profile: React.FC = () => {
             'Suas informações do perfil foram atualizadas com sucesso!',
         });
       } catch (err) {
-        // if (err instanceof Yup.ValidationError) {
-        //   formRef.current?.setErrors(getValidationErrors(err));
-
-        //   return;
-        // }
-
         addToast({
           type: 'error',
           title: 'Erro na atualização',

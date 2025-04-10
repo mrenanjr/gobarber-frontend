@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { isToday, format, isAfter, parseISO } from 'date-fns';
-import { ptBR } from 'date-fns/locale/pt-BR';
-import { DayPicker, formatDay, Modifiers } from 'react-day-picker';
+import { ptBR } from 'date-fns/locale';
+import { DayPicker, Modifiers } from 'react-day-picker';
 
 import { FiClock, FiPower } from 'react-icons/fi';
 
@@ -229,7 +229,6 @@ const Dashboard: React.FC = () => {
         </Schedule>
         <Calendar>
           <DayPicker
-            locale={ptBR}
             mode="single"
             disabled={date =>
               date.getDay() === 0 ||
@@ -242,20 +241,19 @@ const Dashboard: React.FC = () => {
             onMonthChange={handleMonthChange}
             selected={selectedDate}
             onDayClick={handleDateChange}
-            // months={[
-            //   'Janeiro',
-            //   'Fevereiro',
-            //   'Março',
-            //   'Abril',
-            //   'Maio',
-            //   'Junho',
-            //   'Julho',
-            //   'Agosto',
-            //   'Setembro',
-            //   'Outubro',
-            //   'Novembro',
-            //   'Dezembro',
-            // ]}
+            locale={ptBR}
+            formatters={{
+              formatCaption: (date, options) => {
+                const formattedMonth = format(date, 'MMMM yyyy', options);
+
+                return (
+                  formattedMonth.charAt(0).toUpperCase() +
+                  formattedMonth.slice(1)
+                );
+              },
+              formatWeekdayName: (weekday, options) =>
+                format(weekday, 'ccccc', options),
+            }}
           />
         </Calendar>
       </Content>

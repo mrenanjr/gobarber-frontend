@@ -1,31 +1,26 @@
-import React, { JSX } from 'react';
-import { Routes, Route, Navigate } from 'react-router';
-import SingIn from '../pages/SingIn';
+import React from 'react';
+import { Routes, Route } from 'react-router';
+
+import PrivateRoute from './PrivateRoute';
+
+import SignIn from '../pages/SingIn';
 import SignUp from '../pages/SignUp';
 import ForgotPassword from '../pages/ForgotPassword';
 import ResetPassword from '../pages/ResetPassword';
-
 import Profile from '../pages/Profile';
 import Dashboard from '../pages/Dashboard';
 
-const PrivateRoute = ({ element }: { element: JSX.Element }): JSX.Element => {
-  const isAuthenticated = false;
-  return isAuthenticated ? element : <Navigate to="/" />;
-};
-
-const RoutesProvider: React.FC = () => (
+const AppRoutes: React.FC = () => (
   <Routes>
-    <Route path="/" element={<SingIn />} />
+    <Route path="/" element={<SignIn />} />
     <Route path="/signup" element={<SignUp />} />
     <Route path="/forgot-password" element={<ForgotPassword />} />
     <Route path="/reset-password" element={<ResetPassword />} />
-
-    <Route path="/profile" element={<PrivateRoute element={<Profile />} />} />
-    <Route
-      path="/dashboard"
-      element={<PrivateRoute element={<Dashboard />} />}
-    />
+    <Route element={<PrivateRoute />}>
+      <Route path="/profile" element={<Profile />} />
+      <Route path="/dashboard" element={<Dashboard />} />
+    </Route>
   </Routes>
 );
 
-export default RoutesProvider;
+export default AppRoutes;
